@@ -1,5 +1,3 @@
-using Makie
-using GeometryBasics
 
 struct PositionedRect
     rect::Rect

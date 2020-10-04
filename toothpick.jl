@@ -1,5 +1,24 @@
+using Test
 using Images
 using Luxor
+
+function test_result(result)
+    expected_values = [
+        1, 3, 7, 11, 15, 23, 35, 43, 47, 55, 67, 79, 95, 123, 155, 171, 175, 183, 195, 207, 223, 251, 283, 303, 319, 347, 383, 423, 483, 571, 651, 683, 687, 695, 707, 719, 735, 763, 795, 815, 831, 859, 895, 935, 995, 1083, 1163, 1199, 1215, 1243, 1279, 1319, 1379
+    ]
+    expected_keys = 1:length(expected_values)
+    expected_toothpicks_at_iteration = Dict(zip(expected_keys, expected_values))
+    toothpicks_at_iteration = Dict{Int,Int}()
+    
+    total_toothpicks = 0
+    for iteration in 1:maximum(keys(result))
+        total_toothpicks += length(result[iteration])
+        toothpicks_at_iteration[iteration] = total_toothpicks
+    end
+    for (ei, ep) in expected_toothpicks_at_iteration
+        @assert toothpicks_at_iteration[ei] == ep
+    end
+end
 
 struct ToothpickPoint
     x::Int
@@ -48,11 +67,13 @@ function spawn(toothpick::Toothpick, from_a::Bool, from_b::Bool)
     spawned
 end
 
-function spawn(toothpicks::Array{Toothpick,1})
+function spawn(toothpicks::Dict{Int,Array{Toothpick,1}})
+    last_iteration_toothpicks = toothpicks[maximum(keys(toothpicks))]
     new_toothpicks = Toothpick[]
 
     occurances = Dict{ToothpickPoint,Int}()
-    for tp in [[t.a for t in toothpicks]; [t.b for t in toothpicks]]
+    # for tp in Iterators.flatten(values(toothpicks))
+    for tp in [[t.a for t in Iterators.flatten(values(toothpicks))]; [t.b for t in Iterators.flatten(values(toothpicks))]]
         if tp in keys(occurances)
             occurances[tp] += 1
         else
@@ -60,7 +81,7 @@ function spawn(toothpicks::Array{Toothpick,1})
         end
     end
 
-    for t in toothpicks
+    for t in last_iteration_toothpicks
         if occurances[t.a] == 1
             push!(new_toothpicks, Toothpick(t.a, !t.horizontal))
         end
@@ -91,27 +112,43 @@ function pride_colour(iteration::Int)
         6 => "blue",
         7 => "purple"
     )
-    if iteration % 7 == 0
-        return colours[7]
-    end
 
-    return colours[iteration % 7]
+    for i in 1:maximum(keys(colours))
+        if iteration < 2^i
+            return colours[i]
+        end
+    end
+    return colours[7]
 
 end
 
 function draw(iteration_toothpicks)
-    imgnum = lpad(maximum(keys(iteration_toothpicks)), 3, "0")
-    Drawing(1024, 1024, "toothpicks_$(imgnum).png")
+    max_iteration = maximum(keys(iteration_toothpicks))
+    imgnum = lpad(max_iteration, 3, "0")
+    h = 2048
+    w = 2048
+    Drawing(h, w, "toothpicks_$(imgnum).png")
     origin()
     background("black")
 
-    drawn = []
+    # needed for calculating scale
+    all_toothpicks = Iterators.flatten(collect(values(iteration_toothpicks)))
+    tpx = Iterators.flatten([Iterators.flatten([tp.a.x; tp.b.x]) for tp in all_toothpicks])
+    tpy = Iterators.flatten([Iterators.flatten([tp.a.y; tp.b.y]) for tp in all_toothpicks])
+    min_x = minimum(tpx)
+    max_x = maximum(tpx)
+    min_y = minimum(tpy)
+    max_y = maximum(tpy)
+    h_y = abs(min_y) + abs(max_y)
+    w_x = abs(min_x) + abs(max_y)
+    scale(h / h_y, w / w_x)
 
     for iteration in 1:maximum(keys(iteration_toothpicks))
         toothpicks = iteration_toothpicks[iteration]
+
         col = pride_colour(iteration)
-        @show iteration, col, length(toothpicks)
         sethue(col)
+
 
         for t in toothpicks
             a = Point(t.a.x, t.a.y)
@@ -131,7 +168,7 @@ function generate_toothpicks(N::Int)
     draw(iteration_toothpicks)
 
     for iteration in 2:N
-        new_toothpicks = spawn(new_toothpicks)
+        new_toothpicks = spawn(iteration_toothpicks)
         iteration_toothpicks[iteration] = new_toothpicks
         draw(iteration_toothpicks)
     end
@@ -139,4 +176,6 @@ function generate_toothpicks(N::Int)
 
 end
 
-result = generate_toothpicks(64)
+result = generate_toothpicks(128)
+
+test_result(result)

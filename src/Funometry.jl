@@ -1,10 +1,12 @@
 module Funometry
 
-using Makie
-using GeometryBasics
-using Luxor
+include("toothpicks.jl")
 
-include("fractals.jl")
 include("func.jl")
+
+export
+    ToothpickPoint,
+    Toothpick,
+    spawn
 
 end # module

@@ -1,7 +1,5 @@
 using Funometry
 using Test
-using Images
-using Luxor
 
 
 function pride_colour(iteration::Int)

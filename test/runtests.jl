@@ -1,6 +1,4 @@
 using Test
 using Funometry
 
-@testset "basic" begin
-    @test 1 == 1
-end
+include("test_toothpick.jl")

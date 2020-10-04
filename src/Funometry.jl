@@ -5,6 +5,7 @@ include("toothpicks.jl")
 export
     ToothpickPoint,
     Toothpick,
-    spawn
+    spawn,
+    generate_toothpicks
 
 end # module

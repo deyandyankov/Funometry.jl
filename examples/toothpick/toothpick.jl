@@ -3,26 +3,6 @@ using Test
 using Images
 using Luxor
 
-function test_result(result)
-    expected_values = [
-        1, 3, 7, 11, 15, 23, 35, 43, 47, 55, 67, 79, 95, 123, 155, 171, 175, 183, 195, 207, 223, 251, 283, 303, 319, 347, 383, 423, 483, 571, 651, 683, 687, 695, 707, 719, 735, 763, 795, 815, 831, 859, 895, 935, 995, 1083, 1163, 1199, 1215, 1243, 1279, 1319, 1379
-    ]
-    expected_keys = 1:length(expected_values)
-    expected_toothpicks_at_iteration = Dict(zip(expected_keys, expected_values))
-    toothpicks_at_iteration = Dict{Int,Int}()
-    
-    total_toothpicks = 0
-    for iteration in 1:maximum(keys(result))
-        total_toothpicks += length(result[iteration])
-        toothpicks_at_iteration[iteration] = total_toothpicks
-    end
-    for (ei, ep) in expected_toothpicks_at_iteration
-        @assert toothpicks_at_iteration[ei] == ep
-    end
-end
-
-
-
 
 function pride_colour(iteration::Int)
     colours = Dict(
@@ -82,22 +62,16 @@ function draw(iteration_toothpicks)
     finish()
 end
 
-function generate_toothpicks(N::Int)
-    iteration_toothpicks = Dict{Int, Array{Toothpick,1}}(
-        1 => [Toothpick(ToothpickPoint(0, 0), false)]
-    )
-    new_toothpicks = copy(iteration_toothpicks[1])
-    draw(iteration_toothpicks)
+function example_toothpick(iterations)
+    generated = generate_toothpicks(iterations)
 
-    for iteration in 2:N
-        new_toothpicks = spawn(iteration_toothpicks)
-        iteration_toothpicks[iteration] = new_toothpicks
-        draw(iteration_toothpicks)
+    for (iteration, toothpicks) in generated
+        d = Dict{Int, Array{Toothpick,1}}()
+        for i in 1:iteration
+            d[i] = generated[i]
+        end
+        draw(d)
     end
-    iteration_toothpicks
-
 end
 
-result = generate_toothpicks(128)
-
-test_result(result)
+example_toothpick(13)

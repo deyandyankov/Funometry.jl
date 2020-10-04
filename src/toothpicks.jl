@@ -10,10 +10,8 @@ struct Toothpick
     b::ToothpickPoint
 end
 
-function Toothpick(center::ToothpickPoint, horizontal::Bool)
-    default_toothpick_length = 31
-
-    toothpick_half = div(default_toothpick_length - 1, 2)
+function Toothpick(center::ToothpickPoint, horizontal::Bool; toothpick_length=31)
+    toothpick_half = div(toothpick_length - 1, 2)
 
     if horizontal
         ax = center.x - toothpick_half
@@ -50,7 +48,6 @@ function spawn(toothpicks::Dict{Int,Array{Toothpick,1}})
     new_toothpicks = Toothpick[]
 
     occurances = Dict{ToothpickPoint,Int}()
-    # for tp in Iterators.flatten(values(toothpicks))
     for tp in [[t.a for t in Iterators.flatten(values(toothpicks))]; [t.b for t in Iterators.flatten(values(toothpicks))]]
         if tp in keys(occurances)
             occurances[tp] += 1
@@ -68,4 +65,18 @@ function spawn(toothpicks::Dict{Int,Array{Toothpick,1}})
         end
     end
     new_toothpicks
+end
+
+function generate_toothpicks(N::Int)
+    iteration_toothpicks = Dict{Int, Array{Toothpick,1}}(
+        1 => [Toothpick(ToothpickPoint(0, 0), false)]
+    )
+    new_toothpicks = copy(iteration_toothpicks[1])
+
+    for iteration in 2:N
+        new_toothpicks = spawn(iteration_toothpicks)
+        iteration_toothpicks[iteration] = new_toothpicks
+    end
+
+    iteration_toothpicks
 end

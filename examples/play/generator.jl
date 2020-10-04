@@ -3,45 +3,28 @@ using Funometry
 function draw_racaman(history)
     max_iteration = length(history)
     imgnum = lpad(max_iteration, 3, "0")
-    w = 256
-    h = 256
+    w = 1024
+    h = 1024
 
     Drawing(h, w, "racaman_$(imgnum).png")
-
-    points = [Point(x, 0) for x in history]
+    origin(Point(h * .1, h * .9))
+    rotate(-π/4)
     
-
-    # scale(25, 25)
+    points = [Point(x, 0) for x in history]
     background("black")
 
-    ys = []
-
-    sethue("white")
-
-    draw_arcs = []
+    sethue(1, 1 - max_iteration / 70, 0)
     left = 1
     right = 2
     while right <= length(points)
         left_point = points[left]
         right_point = points[right]
         center_point = midpoint(left_point, right_point)
-        push!(draw_arcs, (center_point, left_point, right_point))
-        push!(ys, right_point.x - center_point.x)
+        arc_tuple = (center_point, left_point, right_point)
+        arc_tuple = arc_tuple .* 10
+        arc2r(arc_tuple[1], arc_tuple[2], arc_tuple[3], :stroke)
         left += 1
         right += 1
-    end
-
-
-    max_y = maximum(ys)
-    @show max_y
-
-    draw_arcs = [d .* 10 for d in draw_arcs]
-
-
-    origin(Point(h * .1, h * .9))
-    rotate(-π/4)
-    for d in draw_arcs
-        arc2r(d[1], d[2], d[3], :stroke)
     end
 
 
@@ -60,8 +43,8 @@ function generate_racaman(N)
 end
 
 function do_racaman()
-    history = generate_racaman(20)
-
+    history = generate_racaman(65)
+    draw_racaman(history[1:1])
     for i=1:length(history)-1
         draw_racaman(history[1:i+1])
     end

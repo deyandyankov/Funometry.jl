@@ -1,16 +1,14 @@
-function racaman(iteration, history)
-    iteration < 1 && error("Iteration must be >= 1")
-    if length(history) == 0
-        history = [0]
+function racaman(N)
+    sequence = [0]
+    n = last(sequence)
+    
+    for i in 1:N
+        next_number = n - i
+        if next_number < 0 || next_number in sequence
+            next_number = n + i
+        end
+        n = next_number
+        push!(sequence, next_number)
     end
-
-    n = last(history)
-
-    next_number = n - iteration
-
-    if next_number < 0 || next_number in history
-        next_number = n + iteration
-    end
-
-    return next_number
+    return sequence
 end

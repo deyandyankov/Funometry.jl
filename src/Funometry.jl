@@ -2,9 +2,11 @@ module Funometry
 
 using Images
 using Luxor
+using Distances
 
 include("toothpicks.jl")
 include("racaman.jl")
+include("sierpinski.jl")
 
 export
     # toothpicks.jl
@@ -14,6 +16,9 @@ export
     generate_toothpicks,
 
     # racaman.jl
-    racaman
+    racaman,
+
+    # sierpinski.jl
+    sierpinski_carpet
 
 end # module

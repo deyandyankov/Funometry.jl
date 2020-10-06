@@ -4,6 +4,7 @@ authors = ["Deyan Dyankov <deyan@dyankov.name>"]
 version = "0.1.0"
 
 [deps]
+Distances = "b4f34e82-e78d-54a5-968a-f98e89d6e8f7"
 GeometryBasics = "5c1252a2-5f33-56bf-86c9-59e7332b4326"
 Images = "916415d5-f1e6-5110-898d-aaa5f9f070e0"
 Luxor = "ae8d54c2-7ccd-5906-9d76-62fc9837b5bc"
